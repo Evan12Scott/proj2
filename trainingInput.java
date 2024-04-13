@@ -7,8 +7,8 @@ Description: trainingInput handles the retrieval of all necessary input from use
 import java.util.Scanner;
 
 public class trainingInput {
-        validateInput userInput = new validateInput();
-	String readFile, weight, epoch, writeFile, learningRate, theta, threshold;
+    validateInput userInput = new validateInput();
+	String readFile, writeFile;
 	
         /*
 	Description: prompts user for all necessary information to train the hopfield net
