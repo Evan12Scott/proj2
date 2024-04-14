@@ -70,6 +70,9 @@ public class HopfieldTraining {
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
 		}
+
+		// zero out the diagonals in weight matrix
+		zeroDiagonals(weights);
 		
 		// write weights out to provided file
 		writeToFile(weights);
@@ -141,6 +144,16 @@ public class HopfieldTraining {
             }
         }
         return transposedMatrix;
+	}
+
+	private void zeroDiagonals(int[][] weights){
+		for(int i = 0; i < weights.length; i++){
+			for(int j = 0; j < weights[i].length; j++){
+				if(i == j){
+					weights[i][j] = 0;
+				}
+			}
+		}
 	}
 
 	/*
