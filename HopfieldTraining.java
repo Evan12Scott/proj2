@@ -1,7 +1,7 @@
 /*
 Authors: Evan Scott, Kieran Kennedy, Sean Pala
-Last Date Modified: 4/11/24
-Description: HopfieldTraining handles the training for the discrete Hppfield net
+Last Date Modified: 4/14/24
+Description: HopfieldTraining handles the training for the discrete Hopfield net
 */
 
 import java.io.BufferedReader;
@@ -45,6 +45,7 @@ public class HopfieldTraining {
 		boolean flag = true;
 		int[][] weights = null;
 
+		// loop through training image vectors
 		for(int i = 0; i < numImages; i++){
 			SimpleEntry<int[], Integer> result = getInputArr();
 
@@ -54,14 +55,14 @@ public class HopfieldTraining {
 			
 			int[][] transpose = transposeMatrix(inputArr, numCols, numRow);
 
+			// initializes weight matrix because know appropriate dimensions with first image vector
 			if(flag){
 				int numRows = transpose.length;
 				weights = new int[numRows][numCols];
 				flag = false;
 			}
-			else{
-				updateWeightMatrix(transpose, inputArr, weights);
-			}
+
+			updateWeightMatrix(transpose, inputArr, weights);
 		}
 
 		// close the file
@@ -113,7 +114,6 @@ public class HopfieldTraining {
 
 		for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                weights[i][j] = 0;
                 for (int k = 0; k < matrix1[i].length; k++) {
                     weights[i][j] += matrix1[i][k] * matrix2[k];
                 }
@@ -146,6 +146,11 @@ public class HopfieldTraining {
         return transposedMatrix;
 	}
 
+	/*
+	Description: sets the diagonals of the weight matrix to 0
+	PARAMS: weights: int[][] (2D array storing the trained weights)
+	RETURN: NONE
+	*/
 	private void zeroDiagonals(int[][] weights){
 		for(int i = 0; i < weights.length; i++){
 			for(int j = 0; j < weights[i].length; j++){
