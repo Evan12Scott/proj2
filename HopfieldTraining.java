@@ -174,12 +174,11 @@ public class HopfieldTraining {
 			reader.readLine(); //remove blank line
 			while(readIn < inputDimension){
 				String currLine = reader.readLine();
-				String[] inputs = currLine.split(" ");
+				char[] inputs = currLine.toCharArray();
 				numCol = inputs.length;
-				for(String input: inputs){
-					inputArr[readIn] = Integer.parseInt(input);
-					readIn++;
-				}
+				for(int i = 0; i < inputs.length; i++) {
+                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : 0; //Convert 'O' to 1,'' to 0 from image vector
+            	}
 			}
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
