@@ -1,6 +1,6 @@
 /*
 Authors: Evan Scott, Kieran Kennedy, Sean Pala
-Last Date Modified: 4/10/24
+Last Date Modified: 4/14/24
 Description: testingInput handles the retrieval of all necessary input form user that is required for testing the hopfield net. Makes use of functions located in validateInput.java to ensure the validity of the input. 
 */
 

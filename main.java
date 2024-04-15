@@ -1,7 +1,7 @@
 /*
 Authors: Evan Scott, Kieran Kennedy, Sean Pala
-Last Date Modified: 3/7/24
-Description: Main method which abstracts the logic for the testing and training of perceptron net
+Last Date Modified: 4/14/24
+Description: Main method which abstracts the logic for the testing and training of hopfield net
 
 To run the program: 
 	javac validateInput.java testingInput.java trainingInput.java main.java HopfieldTesting.java  HopfieldTesting.java

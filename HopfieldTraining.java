@@ -132,7 +132,7 @@ public class HopfieldTraining {
 				String currLine = reader.readLine();
 				char[] inputs = currLine.toCharArray();
 				for(int i = 0; i < inputs.length; i++) {
-                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : -1; //Convert 'O' to 1,'' to 0 from image vector
+                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : -1; //Convert 'O' to 1,'' to -1 from image vector
             	}
 			}
 		}catch(Exception e){

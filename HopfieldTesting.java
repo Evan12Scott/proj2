@@ -69,12 +69,14 @@ public class HopfieldTesting {
 		for(int i = 0; i < numImages; i++){
 			int[] inputArr = getInputArr();
 			int[] yArr = new int[inputArr.length];
+			int epochsToConverge = 0;
 
 			//Array of all possible indicies, to be used for random order
 			int[] randomOrder = new int[inputArr.length];
 			
 			while(true){
 				boolean change = false;
+				epochsToConverge++;
 				//Set y = x
 				for(int j = 0; j < inputArr.length; j++){
 					yArr[j] = inputArr[j];
@@ -102,7 +104,7 @@ public class HopfieldTesting {
 				
 				//Check for convergence
 				if(!change){
-					writeToFile(yArr, i);
+					writeToFile(yArr, i, epochsToConverge);
 					break;
 				}else{
 					//Set x = y
@@ -129,9 +131,9 @@ public class HopfieldTesting {
 	PARAMS: int[] yArr - the generated ouput
 	RETURN: None
 	*/
-	private void writeToFile(int[] yArr, int curr){
+	private void writeToFile(int[] yArr, int curr, int epochsToConverge){
 		try{
-			writer.write("Image " + curr + "\n");
+			writer.write("Image " + curr + " : Took " + epochsToConverge + " Epochs To Converge\n");
 			String out = "";
 			for(int i = 0; i < numCols; i++){
 				for(int j = 0; j < numCols; j++){
@@ -198,7 +200,7 @@ public class HopfieldTesting {
 				char[] inputs = currLine.toCharArray();
 				numCols = inputs.length;
 				for(int i = 0; i < inputs.length; i++) {
-                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : 0; //Convert 'O' to 1,'' to 0 from image vector
+                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : -1; //Convert 'O' to 1,'' to 0 from image vector
             	}
 			}
 		}catch(Exception e){

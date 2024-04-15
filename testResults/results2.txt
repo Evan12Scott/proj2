@@ -1,0 +1,15 @@
+Image 0
+O    O
+O   OO
+OO   O
+O    O
+Image 1
+OOOOOO
+ OO   
+   OO 
+OOOOOO
+Image 2
+  OO  
+  OOOO
+OOOO  
+  OO  
