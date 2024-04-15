@@ -43,7 +43,6 @@ public class HopfieldTraining {
 	RETURN: None
 	*/
 	public void Train() {
-		boolean flag = true;
 		int[][] weights = weights = new int[inputDimension][inputDimension];;
 
 		// loop through training image vectors
