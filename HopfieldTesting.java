@@ -1,21 +1,22 @@
 /*
 Authors: Evan Scott, Kieran Kennedy, Sean Pala
-Last Date Modified: 3/7/24
-Description: PerceptronTraining handles the testing for the perceptron net
+Last Date Modified: 4/14/24
+Description: HopfieldTesting handles the testing for the Hopfield net
 */
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+//import java.nio.Buffer;
+import java.util.Random;
 
 public class HopfieldTesting {
 	String readWeightsFile, readDataFile, writeFile;
 	BufferedReader reader;
-	double theta;
-	int inputSize, outputSize, numPairs;
+	BufferedWriter writer;
+	int inputDimension, numImages;
 	double[][] weights = null;
-	double[] weightBias = null;	
 	
 	/*
 	Description: constructor which gets the initial necessary values from param files reading
@@ -29,36 +30,26 @@ public class HopfieldTesting {
 		this.readDataFile = readDataFile;
 		this.writeFile = writeFile;
 
-		// get initial base values from file
 		try{
-			reader = new BufferedReader(new FileReader(readWeightsFile));
-			inputSize = Integer.parseInt(reader.readLine());
-			outputSize = Integer.parseInt(reader.readLine());
-			theta = Double.parseDouble(reader.readLine());
+			// get initial base values from testing file
+			reader = new BufferedReader(new FileReader(readDataFile));
+			String[] dimensionParse = reader.readLine().split("\\s+");
+			inputDimension = Integer.parseInt(dimensionParse[0]);
+			String[] numImageParse = reader.readLine().split("\\s+");
+			numImages = Integer.parseInt(numImageParse[0]);
+			writer = new BufferedWriter(new FileWriter(writeFile));
 
-			reader.readLine();
-
-			weights = new double[inputSize][outputSize];
-			for (int i = 0; i < inputSize; i++) {
-                String[] values = reader.readLine().trim().split("\\s+");
-                for (int j = 0; j < outputSize; j++) {
-                    weights[i][j] = Double.parseDouble(values[j]);
+			//Read in weights
+			BufferedReader weightsReader = new BufferedReader(new FileReader(readWeightsFile));
+			weights = new double[inputDimension][inputDimension];
+			for (int i = 0; i < inputDimension; i++) {
+                String[] values = weightsReader.readLine().trim().split("\\s+");
+				if(values.length != inputDimension){System.out.println("ERROR: IMPROPER SIZE");} //REMOVE LATER
+                for (int j = 0; j < values.length; j++) {
+                    weights[i][j] = Integer.parseInt(values[j]);
                 }
             }
-			reader.readLine();
-
-			String[] biasValues = reader.readLine().trim().split("\\s+");
-            weightBias = new double[outputSize];
-            for (int i = 0; i < biasValues.length; i++) {
-                weightBias[i] = Double.parseDouble(biasValues[i]);
-            }
-
-			reader.close();
-			reader = new BufferedReader(new FileReader(readDataFile));
-			// already have input/output dimensions saved so pass these in the data file
-			reader.readLine();
-			reader.readLine();
-			numPairs = Integer.parseInt(reader.readLine());
+			weightsReader.close();
 
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
@@ -66,115 +57,128 @@ public class HopfieldTesting {
 	}
 	
 	/*
-	Description: implements testing of the perceptron net. Calls a number of helper methods for one task per function methodology.
+	Description: implements testing of the hopfield net. Calls a number of helper methods for one task per function methodology.
 	PARAMS: None
 	RETURN: None
 	*/
 	public void Test(){
-		int[] resultValues = new int[outputSize];
-		String resultAnswer = "Undecided";
-		String[] potentialAnswers = {"A", "B", "C", "D", "E", "J", "K"};
-		
-		int numCorrect = 0;
-		for(int i = 0; i < numPairs; i++){
-			int count1s = 0;
+		Random rand = new Random();
+		int maxDepth = 50000;
+
+		//Loop through all images		
+		for(int i = 0; i < numImages; i++){
 			int[] inputArr = getInputArr();
-			int[] expectedValues = getExpectedValues();
-			String expectedAnswer = getExpectedLetter();
+			int[] yArr = new int[inputArr.length];
+
+			//Array of all possible indicies, to be used for random order
+			int[] randomOrder = new int[inputArr.length];
 			
-			for(int j = 0; j < outputSize; j++){ 
-				double yj = calcYj(weightBias[j], weights, inputArr, j);
-				resultValues[j] = (int)yj;
-			}
-			for(int j = 0; j < outputSize; j++){
-				if(resultValues[j] == 1){
-					resultAnswer = potentialAnswers[j];
-					count1s += 1;
+			int depth = 0;
+			while(true && depth < maxDepth){
+				boolean change = false;
+				//Set y = x
+				for(int j = 0; j < inputArr.length; j++){
+					yArr[j] = inputArr[j];
+					randomOrder[j] = j; //Sets each element equal to its index
 				}
-			}
-			if(count1s == 0 || count1s > 1){
-				resultAnswer = "Undecided";
-			}
+	
+				//Randomize order of indicies (Ensures no index is repeated)
+				randomize(randomOrder, rand);
+	
+				for(int randNum: randomOrder){
+					//System.out.println("Working " + i + " " + depth + " " + randNum);
+					int yIn = calcYin(inputArr, randNum, yArr);
+					//Activation function
+					if(yIn < 0){
+						yArr[randNum] = -1;
+						change = true;
+					}else if(yIn > 0){
+						yArr[randNum] = 1;
+						change = true;
+					}
+				}
 				
-			writeToFile(resultValues, resultAnswer, expectedValues, expectedAnswer);
-			if(resultAnswer.equals(expectedAnswer)){
-				numCorrect += 1;
+				//Check for convergence
+				if(!change){
+					System.out.println("Converged");
+					writeToFile(yArr);
+					break;
+				}else{
+					//Set x = y
+					for(int j = 0; j < inputArr.length; j++){
+						inputArr[j] = yArr[j];
+					}
+					if(depth == maxDepth-1){
+						System.out.println("Didn't converge");
+						writeToFile(yArr);
+					}
+				}
+				depth++;
 			}
 		}
 
 		try{ //Close the file
 			reader.close();
+			writer.close();
 		}catch(Exception e){
 			System.out.println("ERROR1: " + e);
 		}
 
 		System.out.println("\nTesting has finished. View the results of the perceptron net in the testResults subdirectory!\n");
-
-		try{
-			double perCorrect = (numCorrect/(double)numPairs) * 100;
-			BufferedWriter writer = new BufferedWriter(new FileWriter(writeFile, true));
-			writer.write("Overall classification accuracy for the testing set: " + Math.round(perCorrect) + "%\n");
-			writer.flush();
-			writer.close();
-		}catch(Exception e){
-			System.out.println("ERROR: " + e);
-		}
 		
 	}
 
 	/*
-	Description: writes the actual vs expected results out to specified file.
-	PARAMS: resultValues: int[] (array storing the actual output values decided by net)
-		    resultAnswer: String (actual character representation decided by net)
-			expectedValues: int[] (array storing the expected output values found in data file)
-			expectedAnswer: String (expected character representation)
+	Description: Writes the generated output to the given file
+	PARAMS: int[] yArr - the generated ouput
 	RETURN: None
 	*/
-	private void writeToFile(int[] resultValues, String resultAnswer, int[] expectedValues, String expectedAnswer) {
+	private void writeToFile(int[] yArr){
 		try{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(writeFile, true));
-			writer.write("Actual Output:\n");
-			writer.write(resultAnswer + "\n");
-			for(int i = 0; i < resultValues.length; i++){
-				writer.write(resultValues[i] + " ");
-			}
-			writer.write("\n");
-			writer.write("Expected Output:\n");
-			writer.write(expectedAnswer + "\n");
-			for(int i = 0; i < expectedValues.length; i++){
-				writer.write(expectedValues[i] + " ");
+			for(int i = 0; i < yArr.length; i++){
+				writer.write(yArr[i] + " ");
 			}
 			writer.write("\n\n");
-			
+			//System.out.println("\n\n\n\n\n\n\n\nWROTE\n\n\n\n\n\n\n\n\n");
 			writer.flush();
-			writer.close();
 		}catch(Exception e){
-			System.out.println("ERROR2: " + e);
+			System.out.println("ERROR: " + e);
 		}
 	}
+
 
 	/*
-	Description: computes activation of each output unit.
-	PARAMS: weightBias: double (bias value calculated from training)
-		    weights: double[][] (2D array storing the trained weights)
-			inputArr: int[] (array storing testing data)
-			j: int
-	RETURN: double - activation
+	Description: Randomizes the order of an array using the Fisher-Yates shuffle
+	PARAMS: int[] inputArr - array conisiting of the input values
+			int index - the current index
+			int[] yArr - array containing the current y values
+	RETURN: int yIn - the calculated yIn
 	*/
-	private double calcYj(double weightBias, double[][] weights, int[] inputArr, int j){
-		double yIn = weightBias;
-		for(int i = 0; i < inputSize; i++){
-			yIn += inputArr[i] * weights[i][j];
-		}
+	private int calcYin(int[] inputArr, int index, int[] yArr){
+        int yIn = 0;
+        yIn += inputArr[index];
+        for(int i = 0; i < weights.length; i++){
+            yIn += yArr[i] * weights[i][index];
+        }
+        return yIn;
+    }
 
-		if(yIn > theta){
-			yIn = 1;
-		}else {
-			yIn = -1;
-		}
 
-		return yIn;
-	}
+	/*
+	Description: Randomizes the order of an array using the Fisher-Yates shuffle
+	PARAMS: int[] randomOrder - array consisting of integers 1-inputSize
+			Random rand - a Random object
+	RETURN: None
+	*/
+    private void randomize(int[] randomOrder, Random rand){
+        for(int i = randomOrder.length - 1; i > 0; i--){
+            int j = rand.nextInt(i + 1);
+            int temp = randomOrder[i];
+            randomOrder[i] = randomOrder[j];
+            randomOrder[j] = temp;
+        }
+    }
+
 
 	/*
 	Description: retrieves the data in testing file line by line
@@ -182,60 +186,23 @@ public class HopfieldTesting {
 	RETURN: int[] - array containing testing data
 	*/
 	private int[] getInputArr(){
-		int[] inputArr = new int[inputSize];
+		int[] inputArr = new int[inputDimension];
+
 		try{
 			int readIn = 0;
 			reader.readLine(); //remove blank line
-			while(readIn < inputSize){
+			while(readIn < inputDimension){
 				String currLine = reader.readLine();
-				String[] inputs = currLine.split(" ");
-				for(String input: inputs){
-					inputArr[readIn] = Integer.parseInt(input);
-					readIn++;
-				}
+				char[] inputs = currLine.toCharArray();
+				for(int i = 0; i < inputs.length; i++) {
+                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : 0; //Convert 'O' to 1,'' to 0 from image vector
+            	}
 			}
 		}catch(Exception e){
-			System.out.println("ERROR3: " + e);
+			System.out.println("ERROR: " + e);
 		}
 		
 		return inputArr;
 	}
 
-	/*
-	Description: retrieves the correct output unit values from data file
-	PARAMS: None
-	RETURN: int[] - array containing correct output units
-	*/
-	private int[] getExpectedValues(){
-		int[] expected = new int[outputSize];
-		try{
-			reader.readLine(); // remove blank line
-			String expectedStr = reader.readLine();
-			String[] expectedArr = expectedStr.split(" ");
-			for(int i = 0; i < outputSize; i++){
-				expected[i] = Integer.parseInt(expectedArr[i]);
-			}
-		}catch(Exception e){
-			System.out.println("ERROR4: " + e);
-		}
-
-		return expected;
-	}
-
-	/*
-	Description: retrieves the correct letter representation from data file
-	PARAMS: None
-	RETURN: String - correct letter representation
-	*/
-	private String getExpectedLetter() {
-		String expectedLetter = "";
-		try {
-			expectedLetter = reader.readLine();
-		} catch(Exception e){
-			System.out.println("ERROR5: " + e);
-		}
-
-		return expectedLetter;
-	}
 }
-
