@@ -10,11 +10,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Random;
 
+import java.util.Arrays;
+
 public class HopfieldTesting {
 	String readWeightsFile, readDataFile, writeFile;
 	BufferedReader reader;
 	BufferedWriter writer;
-	int inputDimension, numImages;
+	int inputDimension, numImages, numCols;
 	double[][] weights = null;
 	
 	/*
@@ -71,7 +73,6 @@ public class HopfieldTesting {
 			//Array of all possible indicies, to be used for random order
 			int[] randomOrder = new int[inputArr.length];
 			
-			int depth = 0;
 			while(true){
 				boolean change = false;
 				//Set y = x
@@ -101,7 +102,7 @@ public class HopfieldTesting {
 				
 				//Check for convergence
 				if(!change){
-					writeToFile(yArr);
+					writeToFile(yArr, i);
 					break;
 				}else{
 					//Set x = y
@@ -128,10 +129,17 @@ public class HopfieldTesting {
 	PARAMS: int[] yArr - the generated ouput
 	RETURN: None
 	*/
-	private void writeToFile(int[] yArr){
+	private void writeToFile(int[] yArr, int curr){
 		try{
-			for(int i = 0; i < yArr.length; i++){
-				writer.write(yArr[i] + " ");
+			writer.write("Image " + curr + "\n");
+			String out = "";
+			for(int i = 0; i < numCols; i++){
+				for(int j = 0; j < numCols; j++){
+					out += (yArr[i*10+j] == 1) ? "O" : " ";
+				}
+				writer.write(out);
+				writer.write("\n");
+				out = "";
 			}
 			writer.write("\n\n");
 			writer.flush();
@@ -188,6 +196,7 @@ public class HopfieldTesting {
 			while(readIn < inputDimension){
 				String currLine = reader.readLine();
 				char[] inputs = currLine.toCharArray();
+				numCols = inputs.length;
 				for(int i = 0; i < inputs.length; i++) {
                 	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : 0; //Convert 'O' to 1,'' to 0 from image vector
             	}
@@ -195,7 +204,7 @@ public class HopfieldTesting {
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
 		}
-		
+		System.out.println(Arrays.toString(inputArr));
 		return inputArr;
 	}
 
