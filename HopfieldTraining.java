@@ -44,18 +44,12 @@ public class HopfieldTraining {
 	*/
 	public void Train() {
 		boolean flag = true;
-		int[][] weights = null;
+		int[][] weights = weights = new int[inputDimension][inputDimension];;
 
 		// loop through training image vectors
 		for(int i = 0; i < numImages; i++){
 
         	int[] inputArr = getInputArr();
-
-			// initializes weight matrix because know appropriate dimensions with first image vector
-			if(flag){
-				weights = new int[inputArr.length][inputArr.length];
-				flag = false;
-			}
 
 			updateWeightMatrix(inputArr, weights);
 		}
@@ -120,11 +114,7 @@ public class HopfieldTraining {
 	*/
 	private void zeroDiagonals(int[][] weights){
 		for(int i = 0; i < weights.length; i++){
-			for(int j = 0; j < weights[i].length; j++){
-				if(i == j){
-					weights[i][j] = 0;
-				}
-			}
+			weights[i][i] = 0;
 		}
 	}
 
