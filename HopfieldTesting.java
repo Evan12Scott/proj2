@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-//import java.nio.Buffer;
 import java.util.Random;
 
 public class HopfieldTesting {
@@ -63,7 +62,6 @@ public class HopfieldTesting {
 	*/
 	public void Test(){
 		Random rand = new Random();
-		int maxDepth = 50000;
 
 		//Loop through all images		
 		for(int i = 0; i < numImages; i++){
@@ -74,7 +72,7 @@ public class HopfieldTesting {
 			int[] randomOrder = new int[inputArr.length];
 			
 			int depth = 0;
-			while(true && depth < maxDepth){
+			while(true){
 				boolean change = false;
 				//Set y = x
 				for(int j = 0; j < inputArr.length; j++){
@@ -86,21 +84,23 @@ public class HopfieldTesting {
 				randomize(randomOrder, rand);
 	
 				for(int randNum: randomOrder){
-					//System.out.println("Working " + i + " " + depth + " " + randNum);
 					int yIn = calcYin(inputArr, randNum, yArr);
 					//Activation function
 					if(yIn < 0){
+						if(yArr[randNum] != -1){
+							change = true;
+						}
 						yArr[randNum] = -1;
-						change = true;
 					}else if(yIn > 0){
+						if(yArr[randNum] != 1){
+							change = true;
+						}
 						yArr[randNum] = 1;
-						change = true;
 					}
 				}
 				
 				//Check for convergence
 				if(!change){
-					System.out.println("Converged");
 					writeToFile(yArr);
 					break;
 				}else{
@@ -108,12 +108,7 @@ public class HopfieldTesting {
 					for(int j = 0; j < inputArr.length; j++){
 						inputArr[j] = yArr[j];
 					}
-					if(depth == maxDepth-1){
-						System.out.println("Didn't converge");
-						writeToFile(yArr);
-					}
 				}
-				depth++;
 			}
 		}
 
@@ -121,10 +116,10 @@ public class HopfieldTesting {
 			reader.close();
 			writer.close();
 		}catch(Exception e){
-			System.out.println("ERROR1: " + e);
+			System.out.println("ERROR: " + e);
 		}
 
-		System.out.println("\nTesting has finished. View the results of the perceptron net in the testResults subdirectory!\n");
+		System.out.println("\nTesting has finished. View the results of the hopfield net in the testResults subdirectory!\n");
 		
 	}
 
@@ -139,7 +134,6 @@ public class HopfieldTesting {
 				writer.write(yArr[i] + " ");
 			}
 			writer.write("\n\n");
-			//System.out.println("\n\n\n\n\n\n\n\nWROTE\n\n\n\n\n\n\n\n\n");
 			writer.flush();
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
