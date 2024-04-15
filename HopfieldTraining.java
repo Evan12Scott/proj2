@@ -28,8 +28,10 @@ public class HopfieldTraining {
 		// get initial base values from file
 		try{
 			reader = new BufferedReader(new FileReader(readFile));
-			inputDimension = Integer.parseInt(reader.readLine());
-			numImages = Integer.parseInt(reader.readLine());
+			String[] dimensionParse = reader.readLine().split("\\s+");
+			inputDimension = Integer.parseInt(dimensionParse[0]);
+			String[] numImageParse = reader.readLine().split("\\s+");
+			numImages = Integer.parseInt(numImageParse[0]);
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
 		}
@@ -52,17 +54,18 @@ public class HopfieldTraining {
         	int[] inputArr = result.getKey();
         	int numCols = result.getValue();
 			int numRow = inputDimension/numCols;
+
+			int[][] originalMatrix = convertArrToMatrix(inputArr, numRow, numCols);
 			
-			int[][] transpose = transposeMatrix(inputArr, numCols, numRow);
+			int[][] transpose = transposeMatrix(originalMatrix);
 
 			// initializes weight matrix because know appropriate dimensions with first image vector
 			if(flag){
-				int numRows = transpose.length;
-				weights = new int[numRows][numCols];
+				weights = new int[originalMatrix.length][transpose[0].length];
 				flag = false;
 			}
 
-			updateWeightMatrix(transpose, inputArr, weights);
+			updateWeightMatrix(originalMatrix, transpose, weights);
 		}
 
 		// close the file
@@ -87,7 +90,6 @@ public class HopfieldTraining {
 	private void writeToFile(int[][] weights){
 		try{
 			BufferedWriter writer = new BufferedWriter(new FileWriter(writeFile));
-			writer.write(inputDimension + "\n\n");
 			for(int i = 0; i < weights.length; i++){
 				for(int j = 0; j < weights[i].length; j++){
 					writer.write(weights[i][j] + " ");
@@ -108,17 +110,31 @@ public class HopfieldTraining {
 			matrix2: int[] - test data matrix
 	RETURN: None
 	*/
-	private void updateWeightMatrix(int[][] matrix1, int[] matrix2, int[][] weights){
-		int numRows = matrix1.length;
-        int numCols = matrix2.length;
+	private void updateWeightMatrix(int[][] origMatrix, int[][] transposeMatrix, int[][] weights){
+		int numRowsOrig = origMatrix.length;
+		int numColsOrig = origMatrix[0].length;
+        int numRowsTranspose = transposeMatrix.length;
 
-		for (int i = 0; i < numRows; i++) {
+		for (int i = 0; i < numRowsOrig; i++) {
+        	for (int j = 0; j < numRowsTranspose; j++) {
+            	int sum = 0;
+            	for (int k = 0; k < numColsOrig; k++) {
+                	sum += origMatrix[i][k] * transposeMatrix[j][k];
+            	}	
+            	weights[i][j] = sum;
+        	}
+    	}
+	}
+
+	private int[][] convertArrToMatrix(int[] array, int numRows, int numCols) {
+		int[][] originalMatrix = new int[numRows][numCols];
+        
+        for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                for (int k = 0; k < matrix1[i].length; k++) {
-                    weights[i][j] += matrix1[i][k] * matrix2[k];
-                }
+                originalMatrix[i][j] = array[i * numCols + j];
             }
         }
+		return originalMatrix;
 	}
 
 	/*
@@ -128,15 +144,9 @@ public class HopfieldTraining {
 			array: int[] - array containing the testing data which will be converted into matrix
 	RETURN: int[][] - transposed matrix
 	*/
-	private int[][] transposeMatrix(int[] array, int numRows, int numCols){
-		int[][] originalMatrix = new int[numRows][numCols];
-        
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                originalMatrix[i][j] = array[i * numCols + j];
-            }
-        }
-
+	private int[][] transposeMatrix(int[][] originalMatrix){
+		int numRows = originalMatrix.length;
+		int numCols = originalMatrix[0].length; 
         int[][] transposedMatrix = new int[numCols][numRows];
         for (int i = 0; i < numCols; i++) {
             for (int j = 0; j < numRows; j++) {
