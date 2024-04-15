@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.FileReader;
-import java.util.AbstractMap.SimpleEntry;
 
 public class HopfieldTraining {
 	int inputDimension, numImages;
@@ -49,23 +48,16 @@ public class HopfieldTraining {
 
 		// loop through training image vectors
 		for(int i = 0; i < numImages; i++){
-			SimpleEntry<int[], Integer> result = getInputArr();
 
-        	int[] inputArr = result.getKey();
-        	int numCols = result.getValue();
-			int numRow = inputDimension/numCols;
-
-			int[][] originalMatrix = convertArrToMatrix(inputArr, numRow, numCols);
-			
-			int[][] transpose = transposeMatrix(originalMatrix);
+        	int[] inputArr = getInputArr();
 
 			// initializes weight matrix because know appropriate dimensions with first image vector
 			if(flag){
-				weights = new int[originalMatrix.length][transpose[0].length];
+				weights = new int[inputArr.length][inputArr.length];
 				flag = false;
 			}
 
-			updateWeightMatrix(originalMatrix, transpose, weights);
+			updateWeightMatrix(inputArr, weights);
 		}
 
 		// close the file
@@ -74,10 +66,10 @@ public class HopfieldTraining {
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
 		}
-
+		
 		// zero out the diagonals in weight matrix
 		zeroDiagonals(weights);
-		
+
 		// write weights out to provided file
 		writeToFile(weights);
 	}
@@ -94,7 +86,9 @@ public class HopfieldTraining {
 				for(int j = 0; j < weights[i].length; j++){
 					writer.write(weights[i][j] + " ");
 				}
-				writer.write("\n");
+				if(i+1 != weights.length){
+					writer.write("\n");
+				}
 			}
 			writer.flush();
 			writer.close();
@@ -106,54 +100,17 @@ public class HopfieldTraining {
 	/*
 	Description: updates the training weights by matrix multiplication
 	PARAMS: weights: int[][] (2D array storing the trained weights)
-			matrix1: int[][] - transposed test data matrix
-			matrix2: int[] - test data matrix
+			inputArr: int[] (1D array storing data to be transposed and matrix multiplied)
 	RETURN: None
 	*/
-	private void updateWeightMatrix(int[][] origMatrix, int[][] transposeMatrix, int[][] weights){
-		int numRowsOrig = origMatrix.length;
-		int numColsOrig = origMatrix[0].length;
-        int numRowsTranspose = transposeMatrix.length;
+	private void updateWeightMatrix(int[] inputArr, int[][] weights){
+		int dimensions = inputArr.length;
 
-		for (int i = 0; i < numRowsOrig; i++) {
-        	for (int j = 0; j < numRowsTranspose; j++) {
-            	int sum = 0;
-            	for (int k = 0; k < numColsOrig; k++) {
-                	sum += origMatrix[i][k] * transposeMatrix[j][k];
-            	}	
-            	weights[i][j] = sum;
+		for (int i = 0; i < dimensions; i++) {
+        	for (int j = 0; j < dimensions; j++) {
+            	weights[i][j] += inputArr[i] * inputArr[j];
         	}
     	}
-	}
-
-	private int[][] convertArrToMatrix(int[] array, int numRows, int numCols) {
-		int[][] originalMatrix = new int[numRows][numCols];
-        
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                originalMatrix[i][j] = array[i * numCols + j];
-            }
-        }
-		return originalMatrix;
-	}
-
-	/*
-	Description: transposes the matrix which is stored in an int[] by converting to int[][] then transpose
-	PARAMS: numRows: int - number of columns test data matrix
-			numCols: int - number of rows in test data matrix
-			array: int[] - array containing the testing data which will be converted into matrix
-	RETURN: int[][] - transposed matrix
-	*/
-	private int[][] transposeMatrix(int[][] originalMatrix){
-		int numRows = originalMatrix.length;
-		int numCols = originalMatrix[0].length; 
-        int[][] transposedMatrix = new int[numCols][numRows];
-        for (int i = 0; i < numCols; i++) {
-            for (int j = 0; j < numRows; j++) {
-                transposedMatrix[i][j] = originalMatrix[j][i];
-            }
-        }
-        return transposedMatrix;
 	}
 
 	/*
@@ -174,18 +131,17 @@ public class HopfieldTraining {
 	/*
 	Description: retrieves the data in testing file line by line
 	PARAMS: None
-	RETURN: int[] and Integer - array containing testing data and integer containing the number of columns for matrix
+	RETURN: int[] - array containing testing data
 	*/
-	private SimpleEntry<int[], Integer> getInputArr(){
+	private int[] getInputArr(){
 		int[] inputArr = new int[inputDimension];
-		int numCol = 0;
+
 		try{
 			int readIn = 0;
 			reader.readLine(); //remove blank line
 			while(readIn < inputDimension){
 				String currLine = reader.readLine();
 				char[] inputs = currLine.toCharArray();
-				numCol = inputs.length;
 				for(int i = 0; i < inputs.length; i++) {
                 	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : 0; //Convert 'O' to 1,'' to 0 from image vector
             	}
@@ -194,7 +150,7 @@ public class HopfieldTraining {
 			System.out.println("ERROR: " + e);
 		}
 		
-		return new SimpleEntry<>(inputArr, numCol);
+		return inputArr;
 	}
 }
 
