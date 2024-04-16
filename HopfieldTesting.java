@@ -137,7 +137,7 @@ public class HopfieldTesting {
 			String out = "";
 			for(int i = 0; i < numCols; i++){
 				for(int j = 0; j < numCols; j++){
-					out += (yArr[i*10+j] == 1) ? "O" : " ";
+					out += (yArr[i*numCols+j] == 1) ? "O" : " ";
 				}
 				writer.write(out);
 				writer.write("\n");
