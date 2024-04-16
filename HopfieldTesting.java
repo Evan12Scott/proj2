@@ -206,7 +206,6 @@ public class HopfieldTesting {
 		}catch(Exception e){
 			System.out.println("ERROR: " + e);
 		}
-		System.out.println(Arrays.toString(inputArr));
 		return inputArr;
 	}
 
