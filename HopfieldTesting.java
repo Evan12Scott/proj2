@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Random;
-
 import java.util.Arrays;
 
 public class HopfieldTesting {
@@ -65,7 +64,7 @@ public class HopfieldTesting {
 	public void Test(){
 		Random rand = new Random();
 
-		//Loop through all images		
+		//Loop through all image vectors	
 		for(int i = 0; i < numImages; i++){
 			int[] inputArr = getInputArr();
 			int[] yArr = new int[inputArr.length];
@@ -129,6 +128,7 @@ public class HopfieldTesting {
 	/*
 	Description: Writes the generated output to the given file
 	PARAMS: int[] yArr - the generated ouput
+			int epochsToConverge - number of iterations that was required for convergence
 	RETURN: None
 	*/
 	private void writeToFile(int[] yArr, int curr, int epochsToConverge){
