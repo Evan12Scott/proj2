@@ -1,0 +1,23 @@
+36 (dimension of the image vectors)
+3 (number of the image vectors)
+
+O    O
+    O 
+  O   
+  OOO 
+    O 
+O    O
+
+OO OOO
+O    O
+O     
+O  O O
+OO   O
+OOOOOO
+
+  OO  
+  OO  
+OO OOO
+OOOO O
+   O  
+O OO  
