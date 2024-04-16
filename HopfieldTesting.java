@@ -152,7 +152,7 @@ public class HopfieldTesting {
 
 
 	/*
-	Description: Randomizes the order of an array using the Fisher-Yates shuffle
+	Description: Calculates yIn using the given index and yArr
 	PARAMS: int[] inputArr - array conisiting of the input values
 			int index - the current index
 			int[] yArr - array containing the current y values
@@ -200,7 +200,7 @@ public class HopfieldTesting {
 				char[] inputs = currLine.toCharArray();
 				numCols = inputs.length;
 				for(int i = 0; i < inputs.length; i++) {
-                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : -1; //Convert 'O' to 1,'' to 0 from image vector
+                	inputArr[readIn++] = (inputs[i] == 'O') ? 1 : -1; //Convert 'O' to 1,'' to -1 from image vector
             	}
 			}
 		}catch(Exception e){
