@@ -32,7 +32,7 @@ public class HopfieldTraining {
 			String[] numImageParse = reader.readLine().split("\\s+");
 			numImages = Integer.parseInt(numImageParse[0]);
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR1: " + e);
 		}
 
 	}
@@ -57,7 +57,7 @@ public class HopfieldTraining {
 		try{ 
 			reader.close();
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR2: " + e);
 		}
 		
 		// zero out the diagonals in weight matrix
@@ -86,7 +86,7 @@ public class HopfieldTraining {
 			writer.flush();
 			writer.close();
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR3: " + e);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class HopfieldTraining {
             	}
 			}
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR4: " + e);
 		}
 		
 		return inputArr;

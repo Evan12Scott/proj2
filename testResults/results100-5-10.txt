@@ -1,0 +1,65 @@
+Image 0 : Took 2 Epochs To Converge
+   OOO OOO
+OO O      
+OO   O   O
+OOO  OOOO 
+O O OOOO  
+ O O     O
+ O O    O 
+  OOOO   O
+  O O  O O
+  O    O  
+
+
+Image 1 : Took 2 Epochs To Converge
+ O OOO  O 
+  O OOO  O
+  OO OOOO 
+  OOOO O O
+  O OO    
+  OOOOO  O
+O OOOO   O
+OO  O     
+ OO OOOO O
+ OO    O O
+
+
+Image 2 : Took 2 Epochs To Converge
+OO OOOOOOO
+ O   O  O 
+O  OOOOOOO
+OOOO  OO  
+ OOO O OO 
+  OO OOOOO
+    O OO  
+    O  OOO
+ OO O  O O
+   O  OO  
+
+
+Image 3 : Took 2 Epochs To Converge
+   O      
+ O O OO  O
+   O  O   
+         O
+OO O   O  
+OO O O OOO
+O O OOOO  
+OO  OOOOOO
+O  OOOO  O
+O O  O OO 
+
+
+Image 4 : Took 2 Epochs To Converge
+ OOO O    
+ O OO OO  
+  O O O   
+  OO OOOO 
+ OOO O O  
+ O   OO O 
+   OO   O 
+  O    O O
+  O  OO   
+OO  O    O
+
+

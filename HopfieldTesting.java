@@ -51,7 +51,7 @@ public class HopfieldTesting {
 			weightsReader.close();
 
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR1: " + e);
 		}
 	}
 	
@@ -117,7 +117,7 @@ public class HopfieldTesting {
 			reader.close();
 			writer.close();
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR2: " + e);
 		}
 
 		System.out.println("\nTesting has finished. View the results of the hopfield net in the testResults subdirectory!\n");
@@ -145,7 +145,7 @@ public class HopfieldTesting {
 			writer.write("\n\n");
 			writer.flush();
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR3: " + e);
 		}
 	}
 
@@ -203,7 +203,7 @@ public class HopfieldTesting {
             	}
 			}
 		}catch(Exception e){
-			System.out.println("ERROR: " + e);
+			System.out.println("ERROR4: " + e);
 		}
 		return inputArr;
 	}
